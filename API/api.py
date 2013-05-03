@@ -77,9 +77,13 @@ class delete:
         params = web.input(track_ids=None)
         if params.track_ids is None:
             return web.webapi.BadRequest()
-        track_ids = params.track_ids.split(",")        
-        response = fp.delete(track_ids);
-        return json.dumps({"ok":True, "track_ids":track_ids})
+        if params.track_ids == "*":
+            fp.erase_database(True)            
+        else:            
+            track_ids = params.track_ids.split(",")        
+            fp.delete(track_ids);
+
+        return json.dumps({"ok":True, "track_ids":params.track_ids})
 
 application = web.application(urls, globals())#.wsgifunc()
         
