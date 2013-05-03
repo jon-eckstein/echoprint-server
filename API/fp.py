@@ -449,16 +449,17 @@ def delete(track_ids, do_commit=True, local=False):
         return local_delete(track_ids)
 
     with solr.pooled_connection(_fp_solr) as host:
-        for t in track_ids:
+        for t in track_ids:            
             host.delete_query("track_id:%s*" % t)
     
-    try:
+    try:            
+        track_ids = [track_id.encode("utf8") for track_id in track_ids]
         get_tyrant().multi_del(track_ids)
     except KeyError:
         pass
     
     if do_commit:
-        commit()
+        commit()        
 
 def local_erase_database():
     global _fake_solr

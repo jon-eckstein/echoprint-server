@@ -24,6 +24,8 @@ urls = (
     '/query', 'query',
     '/query?(.*)', 'query',
     '/ingest', 'ingest',
+    '/delete', 'delete',
+    '/delete?(.*)', 'delete'
 )
 
 
@@ -67,6 +69,17 @@ class query:
         return json.dumps({"ok":True, "query":stuff.fp_code, "message":response.message(), "match":response.match(), "score":response.score, \
                         "qtime":response.qtime, "track_id":response.TRID, "total_time":response.total_time})
 
+class delete:
+    def POST(self):
+        return self.GET()
+
+    def GET(self):
+        params = web.input(track_ids=None)
+        if params.track_ids is None:
+            return web.webapi.BadRequest()
+        track_ids = params.track_ids.split(",")        
+        response = fp.delete(track_ids);
+        return json.dumps({"ok":True, "track_ids":track_ids})
 
 application = web.application(urls, globals())#.wsgifunc()
         
